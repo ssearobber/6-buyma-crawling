@@ -6,19 +6,15 @@ async function buyma() {
     
     const id = process.env.BUYMA_ID || buymaId;
     const password = process.env.BUYMA_PASSWORD || buymaPassword;
-    let array1 = [];//색 나누기
-    let array2 = [];//색 나누기
-    let imagePathArray = []; // 이미지 path 격납
     let browser = {};
     let page = {};
 
     try {
         browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         args: [
-            // '--window-size=1920,1080',
-            // '--disable-notifications',
-            // "--proxy-server=157.90.137.189:3128",
+            '--window-size=1920,1080',
+            '--disable-notifications',
             "--no-sandbox",
             "--disable-setuid-sandbox",
         ],
@@ -26,12 +22,12 @@ async function buyma() {
         userDataDir: path.join(__dirname, '../UserData') // 로그인 정보 쿠키 저장
     });
     page = await browser.newPage();
-    // await page.setViewport({
-    //     width: 1280,
-    //     height: 1080,
-    // });
+    await page.setViewport({
+        width: 1280,
+        height: 1080,
+    });
     await page.setDefaultNavigationTimeout(0);
-    await page.goto('https://www.buyma.com/my/sell/new?tab=b');
+    await page.goto('https://www.buyma.com/my/sell/?tab=b');
 
     // 로그인 작업 건너뛰기
     if (await page.$('.user_name')) {
