@@ -21,10 +21,10 @@ async function buyma() {
 
     try {
         browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         args: [
-            '--window-size=1920,1080',
-            '--disable-notifications',
+            // '--window-size=1920,1080',
+            // '--disable-notifications',
             "--no-sandbox",
             "--disable-setuid-sandbox",
         ],
@@ -32,10 +32,10 @@ async function buyma() {
         userDataDir: path.join(__dirname, '../UserData') // 로그인 정보 쿠키 저장
     });
     page = await browser.newPage();
-    await page.setViewport({
-        width: 1280,
-        height: 1080,
-    });
+    // await page.setViewport({
+    //     width: 1280,
+    //     height: 1080,
+    // });
     await page.setDefaultNavigationTimeout(0);
     await page.goto('https://www.buyma.com/my/sell?duty_kind=all&order=desc&page=1&rows=100&sale_kind=all&sort=item_id&status=for_sale&timesale_kind=all#/');
 
