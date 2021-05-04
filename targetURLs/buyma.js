@@ -53,6 +53,7 @@ async function buyma() {
     }
 
     // 데이터 크롤링
+    console.log('테이터 크롤링 시작.');
     products = await page.evaluate((today) => {
         const tags = document.querySelectorAll('table tbody tr:nth-child(even)');
         const products = [];
@@ -70,13 +71,14 @@ async function buyma() {
         });
         return products;
     }, today)
-
+    console.log('테이터 크롤링 종료.');
     // 나중에 그래프 그릴 때, today값이 없을 때, 출품정지로 생각하여 표시 하지 않음.
     // 나중에 그래프 상세에서 댓글기능을 추가하여, 상품의 사진, 가격을 변경 이력을 남길 수 있게 할기.
 
     // 어제 상품 데이터 - 오늘 상품 데이터 = 오늘 증가 데이터
     // TodayCount테이블에 오늘 증가 데이터 등록
     // 경우의 수, 1. 증가 데이터 없는경우 2. 어제의 데이터에 상품ID가 없는 경우
+    console.log('TodayCount테이블에 증가데이터 입력시작.');
     let cart = 0;
     let wish = 0;
     let access = 0;
@@ -111,8 +113,10 @@ async function buyma() {
             }
         }
     }
+    console.log('TodayCount테이블에 증가데이터 입력종료.');
 
     // 어제 데이터 삭제 (전체 데이터 삭제)
+    console.log('Products테이블의 전체데이터 삭제시작.');
     try {
         await Product.destroy({
             where: {},
@@ -121,7 +125,9 @@ async function buyma() {
         } catch (e) {
             console.log("delete error", e);
         }
+    console.log('Products테이블의 전체데이터 삭제종료.');
     // 오늘 데이터 등록
+    console.log('Products테이블에 오늘 데이터 등록시작.');
     for (let product of products) {
         if (product.productId) {
             try {
@@ -140,6 +146,7 @@ async function buyma() {
             }
         }
     }
+    console.log('Products테이블에 오늘 데이터 등록종료.');
 
     await page.close();
     await browser.close();
