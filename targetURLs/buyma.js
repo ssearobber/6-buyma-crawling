@@ -52,6 +52,7 @@ async function buyma() {
         console.log('로그인했습니다.')
     }
 
+    await page.waitForTimeout(10000);
     // 데이터 크롤링
     console.log('데이터 크롤링 시작.');
     products = await page.evaluate((today) => {
@@ -70,7 +71,7 @@ async function buyma() {
             })
         });
         return products;
-    }, today)
+    }, today);
     console.log('데이터 크롤링 종료.');
     console.log('데이터 크롤링.',products);
     // 나중에 그래프 그릴 때, today값이 없을 때, 출품정지로 생각하여 표시 하지 않음.
