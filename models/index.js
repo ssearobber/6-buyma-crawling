@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
-const Products = require('./products');
 const Product = require('./product');
+const TodayCount = require('./todayCount');
 
 const env = process.env.NODE_ENV || 'development';
 const config = require('../config/config')[env];
@@ -11,13 +11,12 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.Products = Products;
 db.Product = Product;
+db.TodayCount = TodayCount;
 
-Products.init(sequelize);
 Product.init(sequelize);
+TodayCount.init(sequelize);
 
-Products.associate(db);
-Product.associate(db);
+// Product.associate(db);
 
 module.exports = db;
