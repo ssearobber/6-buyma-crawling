@@ -77,24 +77,27 @@ async function buyma() {
     // 어제 상품 데이터 - 오늘 상품 데이터 = 오늘 증가 데이터
     // TodayCount테이블에 오늘 증가 데이터 등록
     // 경우의 수, 1. 증가 데이터 없는경우 2. 어제의 데이터에 상품ID가 없는 경우
+    let cart = 0;
+    let wish = 0;
+    let access = 0;
     for (let product of products) {
         if (product.productId) {
             try {
                 let result = await Product.findOne({
                     where: { productId: product.productId}
                 })
-                console.log("product.cart",typeof product.cart);
-                console.log("product.cart",product.cart);
-                console.log("result.cart",typeof result.cart);
-                console.log("result.cart",result.cart);
-                console.log("Number(product.cart) ",typeof Number(product.cart) );
-                console.log("Number(result.cart)",typeof Number(result.cart));
 
-                let cart = Number(product.cart) - Number(result.cart);
-                let wish = Number(product.wish)- Number(result.wish);
-                let access = Number(product.access) - Number(result.access);
+                if (!result) {
+                    cart = Number(product.cart);
+                    wish = Number(product.wish)
+                    access = Number(product.access);
+                } else {
+                    cart = Number(product.cart) - Number(result.cart);
+                    wish = Number(product.wish)- Number(result.wish);
+                    access = Number(product.access) - Number(result.access);
+                }
 
-                const result2 = await TodayCount.create({
+                await TodayCount.create({
                     productId: product.productId,
                     today: product.today,
                     cart: cart,
@@ -110,12 +113,19 @@ async function buyma() {
     }
 
     // 어제 데이터 삭제 (전체 데이터 삭제)
-
+    try {
+        await Product.destroy({
+            where: {},
+            truncate: true
+        });
+        } catch (e) {
+            console.log("delete error", e);
+        }
     // 오늘 데이터 등록
     for (let product of products) {
         if (product.productId) {
             try {
-                const result = await Product.create({
+                await Product.create({
                     productId: product.productId,
                     productName: product.productName,
                     productStatus: product.productStatus,
@@ -125,7 +135,6 @@ async function buyma() {
                     wish: product.wish,
                     access: product.access,
                 })
-                console.log("result : ", result)
             } catch (e) {
                 console.log("insert error", e);
             }

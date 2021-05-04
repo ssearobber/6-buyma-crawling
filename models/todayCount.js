@@ -6,7 +6,6 @@ module.exports = class TodayCount extends Sequelize.Model {
       productId: {
         type: Sequelize.STRING(20),
         allowNull: false,
-        unique: true,
       },
       today: {
         type: Sequelize.DATE,
