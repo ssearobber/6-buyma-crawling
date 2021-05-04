@@ -52,7 +52,7 @@ async function buyma() {
         console.log('로그인했습니다.')
     }
 
-    await page.waitForTimeout(10000); // 없으면 크롤링 안됨
+    await page.waitForTimeout(20000); // 없으면 크롤링 안됨
     // 데이터 크롤링
     console.log('데이터 크롤링 시작.');
     products = await page.evaluate((today) => {
