@@ -53,7 +53,7 @@ async function buyma() {
     }
 
     // 데이터 크롤링
-    console.log('테이터 크롤링 시작.');
+    console.log('데이터 크롤링 시작.');
     products = await page.evaluate((today) => {
         const tags = document.querySelectorAll('table tbody tr:nth-child(even)');
         const products = [];
@@ -71,7 +71,8 @@ async function buyma() {
         });
         return products;
     }, today)
-    console.log('테이터 크롤링 종료.');
+    console.log('데이터 크롤링 종료.');
+    console.log('데이터 크롤링.',products);
     // 나중에 그래프 그릴 때, today값이 없을 때, 출품정지로 생각하여 표시 하지 않음.
     // 나중에 그래프 상세에서 댓글기능을 추가하여, 상품의 사진, 가격을 변경 이력을 남길 수 있게 할기.
 
