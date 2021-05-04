@@ -7,6 +7,10 @@ module.exports = class TodayCount extends Sequelize.Model {
         type: Sequelize.STRING(20),
         allowNull: false,
       },
+      productName: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
       today: {
         type: Sequelize.DATE,
         allowNull: false

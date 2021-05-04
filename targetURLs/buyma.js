@@ -101,6 +101,7 @@ async function buyma() {
 
                 await TodayCount.create({
                     productId: product.productId,
+                    productName: product.productName,
                     today: product.today,
                     cart: cart,
                     wish: wish,
@@ -116,7 +117,7 @@ async function buyma() {
     console.log('TodayCount테이블에 증가데이터 입력종료.');
 
     // 어제 데이터 삭제 (전체 데이터 삭제)
-    console.log('Products테이블의 전체데이터 삭제시작.');
+    console.log('Products테이블의 어제 데이터 삭제시작.');
     try {
         await Product.destroy({
             where: {},
@@ -125,7 +126,7 @@ async function buyma() {
         } catch (e) {
             console.log("delete error", e);
         }
-    console.log('Products테이블의 전체데이터 삭제종료.');
+    console.log('Products테이블의 어제 데이터 삭제종료.');
     // 오늘 데이터 등록
     console.log('Products테이블에 오늘 데이터 등록시작.');
     for (let product of products) {
