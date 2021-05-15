@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const path = require('path');
+const dayjs = require("dayjs");
 
 const Product = require('../models/product');
 const TodayCount = require('../models/todayCount');
@@ -13,11 +14,7 @@ async function buyma() {
     let page = {};
 
     let products = [];
-    let today = new Date();
-    let year = today.getFullYear(); // 년도
-    let month = today.getMonth() + 1;  // 월
-    let date = today.getDate();  // 날짜
-    today = year + '/' + month + '/' + date;
+    let today = dayjs().format('YYYY/MM/DD');
 
     try {
         browser = await puppeteer.launch({
@@ -67,14 +64,16 @@ async function buyma() {
                 cart :  t && t.querySelector('td:nth-of-type(11) span') && t.querySelector('td:nth-of-type(11) span').textContent,
                 wish :  t && t.querySelector('td:nth-of-type(12) span') && t.querySelector('td:nth-of-type(12) span').textContent,
                 access :  t && t.querySelector('td:nth-of-type(13) span') && t.querySelector('td:nth-of-type(13) span').textContent,
-                today
+                today,
+                link : "https://www.buyma.com" + t && t.querySelector('td:nth-of-type(2) a') && t.querySelector('td:nth-of-type(2) a').href
             })
         });
         return products;
     }, today);
+
+    await page.close();
+    await browser.close();
     console.log('데이터 크롤링 종료.');
-    // 나중에 그래프 그릴 때, today값이 없을 때, 출품정지로 생각하여 표시 하지 않음.
-    // 나중에 그래프 상세에서 댓글기능을 추가하여, 상품의 사진, 가격을 변경 이력을 남길 수 있게 할기.
 
     // 어제 상품 데이터 - 오늘 상품 데이터 = 오늘 증가 데이터
     // TodayCount테이블에 오늘 증가 데이터 등록
@@ -107,8 +106,8 @@ async function buyma() {
                     cart: cart,
                     wish: wish,
                     access: access,
+                    link: product.link,
                 })
-
 
             } catch (e) {
                 console.log("오늘 증가 데이터 에러 : ", e);
@@ -150,17 +149,12 @@ async function buyma() {
     }
     console.log('Products테이블에 오늘 데이터 등록종료.');
 
-    await page.close();
-    await browser.close();
-
     }
     catch(e) {
         console.log(e);
         await page.close();
         await browser.close();
-
-    }
-    
+    } 
 }
 
 module.exports.buyma = buyma;

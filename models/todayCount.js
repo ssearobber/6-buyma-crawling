@@ -27,6 +27,10 @@ module.exports = class TodayCount extends Sequelize.Model {
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
       },
+      link: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: true
