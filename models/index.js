@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const Product = require('./product');
+const TemporaryProduct = require('./temporaryProduct');
 const TodayCount = require('./todayCount');
 
 const env = process.env.NODE_ENV || 'development';
@@ -11,10 +11,10 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.Product = Product;
+db.TemporaryProduct = TemporaryProduct;
 db.TodayCount = TodayCount;
 
-Product.init(sequelize);
+TemporaryProduct.init(sequelize);
 TodayCount.init(sequelize);
 
 // Product.associate(db);

@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const dayjs = require("dayjs");
 
-const Product = require('../models/product');
+const TemporaryProduct = require('../models/temporaryProduct');
 const TodayCount = require('../models/todayCount');
 
 // buyma 데이터 크롤링
@@ -75,7 +75,7 @@ async function buyma() {
     await browser.close();
     console.log('데이터 크롤링 종료.');
 
-    // 어제 상품 데이터 - 오늘 상품 데이터 = 오늘 증가 데이터
+    // 어제 상품 데이터 - 오늘 상품 데이터 = 오늘 증가 데이터  --> [수정 2021/06/12]
     // TodayCount테이블에 오늘 증가 데이터 등록
     // 경우의 수, 1. 증가 데이터 없는경우 2. 어제의 데이터에 상품ID가 없는 경우
     console.log('TodayCount테이블에 증가데이터 입력시작.');
@@ -85,14 +85,14 @@ async function buyma() {
     for (let product of products) {
         if (product.productId) {
             try {
-                let result = await Product.findOne({
+                let result = await TemporaryProduct.findOne({
                     where: { productId: product.productId}
                 })
 
                 if (!result) {
-                    cart = Number(product.cart);
-                    wish = Number(product.wish)
-                    access = Number(product.access);
+                    // cart = Number(product.cart);
+                    // wish = Number(product.wish)
+                    // access = Number(product.access);
                 } else {
                     cart = Number(product.cart) - Number(result.cart);
                     wish = Number(product.wish)- Number(result.wish);
@@ -117,22 +117,22 @@ async function buyma() {
     console.log('TodayCount테이블에 증가데이터 입력종료.');
 
     // 어제 데이터 삭제 (전체 데이터 삭제)
-    console.log('Products테이블의 어제 데이터 삭제시작.');
+    console.log('TemporaryProducts테이블의 어제 데이터 삭제시작.');
     try {
-        await Product.destroy({
+        await TemporaryProduct.destroy({
             where: {},
             truncate: true
         });
         } catch (e) {
             console.log("delete error", e);
         }
-    console.log('Products테이블의 어제 데이터 삭제종료.');
+    console.log('TemporaryProducts테이블의 어제 데이터 삭제종료.');
     // 오늘 데이터 등록
-    console.log('Products테이블에 오늘 데이터 등록시작.');
+    console.log('TemporaryProducts테이블에 오늘 데이터 등록시작.');
     for (let product of products) {
         if (product.productId) {
             try {
-                await Product.create({
+                await TemporaryProduct.create({
                     productId: product.productId,
                     productName: product.productName,
                     productStatus: product.productStatus,
@@ -147,7 +147,7 @@ async function buyma() {
             }
         }
     }
-    console.log('Products테이블에 오늘 데이터 등록종료.');
+    console.log('TemporaryProducts테이블에 오늘 데이터 등록종료.');
 
     }
     catch(e) {

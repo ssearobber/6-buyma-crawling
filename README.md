@@ -9,3 +9,7 @@
 
 todayCount테이블에 link항목 추가
 - todayCount테이블을 직접 항목 추가 후, 데이터 입력
+
+2021/06/12
+db모델명 수정
+- product -> TemporaryProduct
