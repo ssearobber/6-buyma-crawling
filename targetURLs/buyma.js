@@ -93,6 +93,8 @@ async function buyma() {
                     // cart = Number(product.cart);
                     // wish = Number(product.wish)
                     // access = Number(product.access);
+
+                    // [수정 2021/06/12] 1.처음등록, 재출품인 경우 첫날 db입력하지 않음.
                 } else {
                     cart = Number(product.cart) - Number(result.cart);
                     wish = Number(product.wish)- Number(result.wish);
