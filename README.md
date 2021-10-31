@@ -13,3 +13,7 @@ todayCount테이블에 link항목 추가
 2021/06/12
 db모델명 수정
 - product -> TemporaryProduct
+
+2021/10/24
+전체적인db테이블명, 항목 수정
+- 

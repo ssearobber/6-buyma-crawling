@@ -2,14 +2,16 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const dayjs = require("dayjs");
 
-const TemporaryProduct = require('../models/temporaryProduct');
-const TodayCount = require('../models/todayCount');
+const TemporaryProductCount = require('../models/temporaryProductCount');
+const ProductTodayCount = require('../models/productTodayCount');
+const Product = require('../models/product');
 
 // buyma 데이터 크롤링
 async function buyma() {
     
     const id = process.env.BUYMA_ID || buymaId;
     const password = process.env.BUYMA_PASSWORD || buymaPassword;
+    const userId = process.env.USER_ID || userId;
     let browser = {};
     let page = {};
 
@@ -60,7 +62,7 @@ async function buyma() {
                 productId : t && t.querySelector('.item_name p:nth-of-type(2) a:nth-of-type(1)') && t.querySelector('.item_name p:nth-of-type(2) a:nth-of-type(1)').textContent,
                 productName : t && t.querySelector('.item_name p:nth-of-type(1)') && t.querySelector('.item_name p:nth-of-type(1)').textContent,
                 productStatus : "出品中",
-                releaseDate : t && t.querySelector('._item_yukodate span') && t.querySelector('._item_yukodate span').textContent.replace(/\n\s+/g,''),
+                releaseDate : t && t.querySelector('._item_kokaidate_text') && t.querySelector('._item_kokaidate_text').textContent.replace(/\n\s+/g,''),
                 cart :  t && t.querySelector('td:nth-of-type(11) span') && t.querySelector('td:nth-of-type(11) span').textContent,
                 wish :  t && t.querySelector('td:nth-of-type(12) span') && t.querySelector('td:nth-of-type(12) span').textContent,
                 access :  t && t.querySelector('td:nth-of-type(13) span') && t.querySelector('td:nth-of-type(13) span').textContent,
@@ -75,18 +77,52 @@ async function buyma() {
     await browser.close();
     console.log('데이터 크롤링 종료.');
 
+    // product테이블 삭제 (전체 데이터 삭제)
+    console.log('product테이블의 데이터 삭제시작.');
+    try {
+        await Product.destroy({
+            where: {},
+            truncate: true
+        });
+        } catch (e) {
+            console.log("delete error", e);
+        }
+    console.log('product테이블의 데이터 삭제종료.');
+    // product테이블에 出品中인 데이터갱신  --> [추가 2021/10/26]
+    console.log('product테이블의 데이터 입력시작.');
+    for (let product of products) {
+        if (product.productId) {
+            try {
+                await Product.create({
+                    user_id: userId,
+                    buyma_product_id: product.productId,
+                    buyma_product_name: product.productName,
+                    buyma_product_status: product.productStatus,
+                    buyma_product_realease_date: product.releaseDate,
+                    create_id: "crawling",
+                    date_created: today,
+                    update_id: "crawling",
+                    last_updated: today,
+                })
+            } catch (e) {
+                console.log("insert error", e);
+            }
+        }
+    }
+    console.log('product테이블의 데이터 입력종료.');
+
     // 어제 상품 데이터 - 오늘 상품 데이터 = 오늘 증가 데이터  --> [수정 2021/06/12]
-    // TodayCount테이블에 오늘 증가 데이터 등록
+    // ProductTodayCount테이블에 오늘 증가 데이터 등록
     // 경우의 수, 1. 증가 데이터 없는경우 2. 어제의 데이터에 상품ID가 없는 경우
-    console.log('TodayCount테이블에 증가데이터 입력시작.');
+    console.log('ProductTodayCount테이블에 증가데이터 입력시작.');
     let cart = 0;
     let wish = 0;
     let access = 0;
     for (let product of products) {
         if (product.productId) {
             try {
-                let result = await TemporaryProduct.findOne({
-                    where: { productId: product.productId}
+                let result = await TemporaryProductCount.findOne({
+                    where: { buyma_product_id: product.productId}
                 })
 
                 if (!result) {
@@ -101,14 +137,22 @@ async function buyma() {
                     access = Number(product.access) - Number(result.access);
                 }
 
-                await TodayCount.create({
-                    productId: product.productId,
-                    productName: product.productName,
+                let productResult = await Product.findOne({
+                    where: { buyma_product_id: product.productId}});
+
+                await ProductTodayCount.create({
+                    product_id: productResult.id,
+                    buyma_product_id: product.productId,
+                    buyma_product_name: product.productName,
                     today: product.today,
                     cart: cart,
                     wish: wish,
                     access: access,
                     link: product.link,
+                    create_id: "crawling",
+                    date_created: today,
+                    update_id: "crawling",
+                    last_updated: today,
                 })
 
             } catch (e) {
@@ -116,40 +160,44 @@ async function buyma() {
             }
         }
     }
-    console.log('TodayCount테이블에 증가데이터 입력종료.');
+    console.log('ProductTodayCount테이블에 증가데이터 입력종료.');
 
     // 어제 데이터 삭제 (전체 데이터 삭제)
-    console.log('TemporaryProducts테이블의 어제 데이터 삭제시작.');
+    console.log('TemporaryProductCount테이블의 어제 데이터 삭제시작.');
     try {
-        await TemporaryProduct.destroy({
+        await TemporaryProductCount.destroy({
             where: {},
             truncate: true
         });
         } catch (e) {
             console.log("delete error", e);
         }
-    console.log('TemporaryProducts테이블의 어제 데이터 삭제종료.');
+    console.log('TemporaryProductCount테이블의 어제 데이터 삭제종료.');
     // 오늘 데이터 등록
-    console.log('TemporaryProducts테이블에 오늘 데이터 등록시작.');
+    console.log('TemporaryProductCount테이블에 오늘 데이터 등록시작.');
     for (let product of products) {
         if (product.productId) {
             try {
-                await TemporaryProduct.create({
-                    productId: product.productId,
-                    productName: product.productName,
-                    productStatus: product.productStatus,
-                    releaseDate: product.releaseDate,
+                await TemporaryProductCount.create({
+                    buyma_product_id: product.productId,
+                    buyma_product_name: product.productName,
+                    buyma_product_status: product.productStatus,
+                    buyma_product_realease_date: product.releaseDate,
                     today: product.today,
                     cart: product.cart,
                     wish: product.wish,
                     access: product.access,
+                    create_id: "crawling",
+                    date_created: today,
+                    update_id: "crawling",
+                    last_updated: today,
                 })
             } catch (e) {
                 console.log("insert error", e);
             }
         }
     }
-    console.log('TemporaryProducts테이블에 오늘 데이터 등록종료.');
+    console.log('TemporaryProductCount테이블에 오늘 데이터 등록종료.');
 
     }
     catch(e) {
