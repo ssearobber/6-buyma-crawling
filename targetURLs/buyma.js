@@ -28,7 +28,7 @@ async function buyma() {
             "--disable-setuid-sandbox",
         ],
         // slowMo : 1 ,
-        // userDataDir: path.join(__dirname, '../UserData') // 로그인 정보 쿠키 저장
+        // userDataDir: path.join(__dirname, '../UserData') // 로그인 정보 쿠키 저장  // 쿠키 저장x--> [수정 2021/11/13]
     });
     page = await browser.newPage();
     // await page.setViewport({
@@ -36,9 +36,7 @@ async function buyma() {
     //     height: 1080,
     // });
     await page.setDefaultNavigationTimeout(0);
-    //await page.goto('https://www.buyma.com/my/sell?duty_kind=all&order=desc&page=1&rows=100&sale_kind=all&sort=item_id&status=for_sale&timesale_kind=all#/');
-    //url변경 --> [수정 2021/11/13]
-    await page.goto('https://www.buyma.com/my/sell/?status=for_sale&tab=b#/');
+    await page.goto('https://www.buyma.com/my/sell?duty_kind=all&order=desc&page=1&rows=100&sale_kind=all&sort=item_id&status=for_sale&timesale_kind=all#/');
 
     // 로그인 작업 건너뛰기
     if (await page.$('.user_name')) {
