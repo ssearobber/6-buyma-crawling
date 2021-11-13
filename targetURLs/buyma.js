@@ -36,7 +36,9 @@ async function buyma() {
     //     height: 1080,
     // });
     await page.setDefaultNavigationTimeout(0);
-    await page.goto('https://www.buyma.com/my/sell?duty_kind=all&order=desc&page=1&rows=100&sale_kind=all&sort=item_id&status=for_sale&timesale_kind=all#/');
+    //await page.goto('https://www.buyma.com/my/sell?duty_kind=all&order=desc&page=1&rows=100&sale_kind=all&sort=item_id&status=for_sale&timesale_kind=all#/');
+    //url변경 --> [수정 2021/11/13]
+    await page.goto('https://www.buyma.com/my/sell/?status=for_sale&tab=b#/');
 
     // 로그인 작업 건너뛰기
     if (await page.$('.user_name')) {
