@@ -15,7 +15,7 @@
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
     "nodemon": "1.18.3",
-    "puppeteer": "^8.0.0",
+    "puppeteer": "^11.0.0",
     "sequelize": "^6.6.2",
     "sequelize-cli": "^6.2.0"
   },
