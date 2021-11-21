@@ -38,7 +38,8 @@ async function buyma() {
     await page.setDefaultNavigationTimeout(0);
     console.log("page.goto전");
     const response = await page.goto('https://www.buyma.com/my/sell?duty_kind=all&order=desc&page=1&rows=100&sale_kind=all&sort=item_id&status=for_sale&timesale_kind=all#/', {
-	waitUntil: 'networkidle0'});
+	waitUntil: 'networkidle0', timeout: 30000});
+    console.log("page.goto후");
     if (!response) {
         throw "Failed to load page!";
     }
