@@ -128,7 +128,7 @@ async function buyma() {
           return products;
         }, today);
 
-        totalProducts.push(products);
+        totalProducts.push(...products);
         pageNum++;
       } else {
         isDataInThePage = false;
@@ -158,7 +158,7 @@ async function buyma() {
             user_id: userId,
             buyma_product_id: product.productId,
             buyma_product_name: product.productName,
-            buyma_product_status: product.totalProductstatus,
+            buyma_product_status: product.productStatus,
             buyma_product_realease_date: product.releaseDate,
             create_id: 'crawling',
             date_created: today,
