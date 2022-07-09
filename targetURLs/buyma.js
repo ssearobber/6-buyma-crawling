@@ -4,6 +4,8 @@ const dayjs = require('dayjs');
 const TemporaryProductCount = require('../models/temporaryProductCount');
 const ProductTodayCount = require('../models/productTodayCount');
 const Product = require('../models/product');
+const sequelize = require('sequelize');
+const Op = sequelize.Op;
 
 // buyma 데이터 크롤링
 async function buyma() {
@@ -171,6 +173,18 @@ async function buyma() {
       }
     }
     console.log('product테이블의 데이터 입력종료.');
+
+    console.log('ProductTodayCount테이블에 10일전 데이터 삭제시작.');
+    let before10Day = dayjs().subtract(10, 'd').format('YYYY/MM/DD');
+    try {
+      await TemporaryProductCount.destroy({
+        where: { today: { [Op.lte]: before10Day } },
+        truncate: true,
+      });
+    } catch (e) {
+      console.log('delete error', e);
+    }
+    console.log('ProductTodayCount테이블에 10일전 데이터 삭제종료.');
 
     // 어제 상품 데이터 - 오늘 상품 데이터 = 오늘 증가 데이터  --> [수정 2021/06/12]
     // ProductTodayCount테이블에 오늘 증가 데이터 등록
