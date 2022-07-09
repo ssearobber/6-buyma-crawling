@@ -174,6 +174,7 @@ async function buyma() {
     }
     console.log('product테이블의 데이터 입력종료.');
 
+    // Op.gt: 초과 ,Op.gte: 이상 ,Op.lt: 미만 ,Op.lte: 이하 ,Op.ne: 같지않음 ,Op.or: 또는 ,Op.in: 배열 요소 중 하나 ,Op.notIn: 배열 요소와 모두 다름  --> [추가 2022/07/09]
     console.log('ProductTodayCount테이블에 10일전 데이터 삭제시작.');
     let before10Day = dayjs().subtract(10, 'd').format('YYYY/MM/DD');
     try {
