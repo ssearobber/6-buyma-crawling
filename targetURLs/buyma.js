@@ -51,7 +51,7 @@ async function buyma() {
         `https://www.buyma.com/my/sell?duty_kind=all&order=desc&page=${pageNum}&rows=100&sale_kind=all&sort=item_id&status=for_sale&timesale_kind=all#/`,
         {
           waitUntil: 'networkidle0',
-          timeout: 30000,
+          // timeout: 30000,
         },
       );
       if (!response) {
