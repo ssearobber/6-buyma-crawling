@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const dayjs = require('dayjs');
 
-const TemporaryProductCount = require('../models/temporaryProductCount');
+const TemporaryYesterdayProductCount = require('../models/temporaryProductCount');
 const ProductTodayCount = require('../models/productTodayCount');
 const Product = require('../models/product');
 const sequelize = require('sequelize');
@@ -77,7 +77,7 @@ async function buyma() {
         }
       }
 
-      await page.waitForTimeout(20000); // 없으면 크롤링 안됨
+      await page.waitForTimeout(30000); // 없으면 크롤링 안됨
       console.log('데이터 존재 체크 시작.');
       let isTd2TagInTheTable = await page.evaluate(() => {
         let td2TagCheck = document.querySelectorAll(
@@ -197,7 +197,7 @@ async function buyma() {
     for (let product of totalProducts) {
       if (product.productId) {
         try {
-          let result = await TemporaryProductCount.findOne({
+          let result = await TemporaryYesterdayProductCount.findOne({
             where: { buyma_product_id: product.productId },
           });
 
@@ -240,7 +240,7 @@ async function buyma() {
     // 어제 데이터 삭제 (전체 데이터 삭제)
     console.log('TemporaryProductCount테이블의 어제 데이터 삭제시작.');
     try {
-      await TemporaryProductCount.destroy({
+      await TemporaryYesterdayProductCount.destroy({
         where: {},
         truncate: true,
       });
@@ -253,7 +253,7 @@ async function buyma() {
     for (let product of totalProducts) {
       if (product.productId) {
         try {
-          await TemporaryProductCount.create({
+          await TemporaryYesterdayProductCount.create({
             buyma_product_id: product.productId,
             buyma_product_name: product.productName,
             buyma_product_status: product.productStatus,
