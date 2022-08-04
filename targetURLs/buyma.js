@@ -77,7 +77,7 @@ async function buyma() {
         }
       }
 
-      await page.waitForTimeout(30000); // 없으면 크롤링 안됨
+      await page.waitForTimeout(40000); // 없으면 크롤링 안됨
       console.log('데이터 존재 체크 시작.');
       let isTd2TagInTheTable = await page.evaluate(() => {
         let td2TagCheck = document.querySelectorAll(
